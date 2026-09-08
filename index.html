@@ -209,6 +209,7 @@
           <label class="opt" data-value="現有光彩護汝髮升級版(上色更快速)"><input type="radio" name="newProductInterest" value="現有光彩護汝髮升級版(上色更快速)">現有光彩護汝髮升級版(上色更快速)</label>
           <label class="opt" data-value="其他"><input type="radio" name="newProductInterest" value="其他">其他</label>
         </div>
+        <input type="text" id="newProductInterestOtherText" placeholder="請填寫您感興趣的內容" style="display:none;margin-top:10px;">
       </div>
       <div class="q-block">
         <h2><span class="qnum">·</span>您願意再次回購嗎?</h2>
@@ -372,6 +373,19 @@ function setupOptionGroups(container){
 }
 setupOptionGroups();
 
+document.querySelectorAll('#newProductInterestOptions .opt').forEach(function(opt){
+  opt.addEventListener('click', function(){
+    const otherInput = document.getElementById('newProductInterestOtherText');
+    if(opt.getAttribute('data-value') === '其他'){
+      otherInput.style.display = 'block';
+      otherInput.focus();
+    } else {
+      otherInput.style.display = 'none';
+      otherInput.value = '';
+    }
+  });
+});
+
 function onNpsInput(value){
   npsTouched = true;
   document.getElementById('npsValue').textContent = value + ' 分';
@@ -490,6 +504,15 @@ function getRadioValue(name){
   return el ? el.value : "";
 }
 
+function getNewProductInterestValue(){
+  const selected = getRadioValue('newProductInterest');
+  if(selected === '其他'){
+    const otherText = document.getElementById('newProductInterestOtherText').value.trim();
+    return otherText ? '其他:' + otherText : '其他';
+  }
+  return selected;
+}
+
 function submitForm(){
   const name = document.getElementById('nameInput').value.trim();
   const phone = document.getElementById('phoneInput').value.trim();
@@ -508,7 +531,7 @@ function submitForm(){
     product: selectedProduct,
     source: getRadioValue('source'),
     typeAnswer: getRadioValue('subQuestion'),
-    newProductInterest: getRadioValue('newProductInterest'),
+    newProductInterest: getNewProductInterestValue(),
     satisfaction: collectSatisfactionAnswers(),
     feedback: document.getElementById('feedbackText').value.trim(),
     repurchase: getRadioValue('repurchase'),
