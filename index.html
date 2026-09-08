@@ -202,6 +202,14 @@
         <p class="desc">雅鄔樂樂於接受您的建議,並期待為您提供更好的產品與服務。(選填)</p>
         <textarea id="feedbackText" placeholder="請填入文字"></textarea>
       </div>
+      <div class="q-block" id="newProductInterestBlock" style="display:none;">
+        <h2><span class="qnum">·</span>針對光彩護汝髮新研發,您會比較有興趣?</h2>
+        <div class="options single" id="newProductInterestOptions">
+          <label class="opt" data-value="睫毛刷式光彩護汝髮(塗抹當下即遮白)"><input type="radio" name="newProductInterest" value="睫毛刷式光彩護汝髮(塗抹當下即遮白)">睫毛刷式光彩護汝髮(塗抹當下即遮白)</label>
+          <label class="opt" data-value="現有光彩護汝髮升級版(上色更快速)"><input type="radio" name="newProductInterest" value="現有光彩護汝髮升級版(上色更快速)">現有光彩護汝髮升級版(上色更快速)</label>
+          <label class="opt" data-value="其他"><input type="radio" name="newProductInterest" value="其他">其他</label>
+        </div>
+      </div>
       <div class="q-block">
         <h2><span class="qnum">·</span>您願意再次回購嗎?</h2>
         <div class="options" id="repurchaseOptions">
@@ -438,6 +446,9 @@ function renderBranch(product){
   const data = branchData[product];
   if(!data) return;
 
+  document.getElementById('newProductInterestBlock').style.display =
+    (product === '光彩護汝髮') ? 'block' : 'none';
+
   document.getElementById('subQuestionTitle').textContent = data.subQuestion.title;
   const optWrap = document.getElementById('subQuestionOptions');
   optWrap.innerHTML = '';
@@ -497,6 +508,7 @@ function submitForm(){
     product: selectedProduct,
     source: getRadioValue('source'),
     typeAnswer: getRadioValue('subQuestion'),
+    newProductInterest: getRadioValue('newProductInterest'),
     satisfaction: collectSatisfactionAnswers(),
     feedback: document.getElementById('feedbackText').value.trim(),
     repurchase: getRadioValue('repurchase'),
