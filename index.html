@@ -187,6 +187,18 @@
           <tbody id="satisfactionRows"></tbody>
         </table>
       </div>
+      <div class="q-block" id="inconvenienceBlock" style="display:none;">
+        <h2><span class="qnum">·</span>使用光彩護汝髮的過程中,哪些地方會讓您覺得比較麻煩或不方便?</h2>
+        <p class="desc">可複選</p>
+        <div class="options" id="inconvenienceOptions">
+          <label class="opt" data-value="塗抹、梳開不容易均勻"><input type="checkbox" name="inconvenience" value="塗抹、梳開不容易均勻">塗抹、梳開不容易均勻</label>
+          <label class="opt" data-value="後腦勺／內層頭髮不好操作"><input type="checkbox" name="inconvenience" value="後腦勺／內層頭髮不好操作">後腦勺／內層頭髮不好操作</label>
+          <label class="opt" data-value="不知道一次該使用多少量"><input type="checkbox" name="inconvenience" value="不知道一次該使用多少量">不知道一次該使用多少量</label>
+          <label class="opt" data-value="不知道需要照光多久才有效"><input type="checkbox" name="inconvenience" value="不知道需要照光多久才有效">不知道需要照光多久才有效</label>
+          <label class="opt" data-value="需要多次使用,等待變色較久"><input type="checkbox" name="inconvenience" value="需要多次使用,等待變色較久">需要多次使用,等待變色較久</label>
+          <label class="opt" data-value="顏色深淺不一、不容易均勻"><input type="checkbox" name="inconvenience" value="顏色深淺不一、不容易均勻">顏色深淺不一、不容易均勻</label>
+        </div>
+      </div>
       <div class="btn-row">
         <button class="btn-secondary" onclick="goTo(1)">上一頁</button>
         <button class="btn-primary" onclick="validateStep2()">下一頁</button>
@@ -361,9 +373,15 @@ function setupOptionGroups(container){
   scope.querySelectorAll('.options').forEach(function(group){
     group.querySelectorAll('.opt').forEach(function(opt){
       opt.addEventListener('click', function(){
+        const input = opt.querySelector('input');
+        if(input.type === 'checkbox'){
+          // 瀏覽器點擊 label 時已經原生切換過 input.checked,這裡只需同步樣式
+          opt.classList.toggle('selected', input.checked);
+          return;
+        }
         group.querySelectorAll('.opt').forEach(function(o){o.classList.remove('selected');});
         opt.classList.add('selected');
-        opt.querySelector('input').checked = true;
+        input.checked = true;
         if(group.id === 'productOptions'){
           selectedProduct = opt.getAttribute('data-value');
         }
@@ -463,6 +481,13 @@ function renderBranch(product){
   document.getElementById('newProductInterestBlock').style.display =
     (product === '光彩護汝髮') ? 'block' : 'none';
 
+  const inconvenienceBlock = document.getElementById('inconvenienceBlock');
+  inconvenienceBlock.style.display = (product === '光彩護汝髮') ? 'block' : 'none';
+  inconvenienceBlock.querySelectorAll('.opt').forEach(function(opt){
+    opt.classList.remove('selected');
+    opt.querySelector('input').checked = false;
+  });
+
   document.getElementById('subQuestionTitle').textContent = data.subQuestion.title;
   const optWrap = document.getElementById('subQuestionOptions');
   optWrap.innerHTML = '';
@@ -504,6 +529,11 @@ function getRadioValue(name){
   return el ? el.value : "";
 }
 
+function getCheckboxValues(name){
+  const els = document.querySelectorAll('input[name="'+name+'"]:checked');
+  return Array.from(els).map(function(el){ return el.value; });
+}
+
 function getNewProductInterestValue(){
   const selected = getRadioValue('newProductInterest');
   if(selected === '其他'){
@@ -531,6 +561,7 @@ function submitForm(){
     product: selectedProduct,
     source: getRadioValue('source'),
     typeAnswer: getRadioValue('subQuestion'),
+    inconvenience: getCheckboxValues('inconvenience').join('、'),
     newProductInterest: getNewProductInterestValue(),
     satisfaction: collectSatisfactionAnswers(),
     feedback: document.getElementById('feedbackText').value.trim(),
